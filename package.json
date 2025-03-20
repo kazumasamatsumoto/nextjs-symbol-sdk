@@ -21,6 +21,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "copy-webpack-plugin": "^13.0.0",
     "crypto-browserify": "^3.12.1",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^4",

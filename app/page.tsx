@@ -4,10 +4,45 @@ import { PrivateKey } from "symbol-sdk";
 import { KeyPair, models, SymbolFacade } from "symbol-sdk/symbol";
 import { useEffect, useState } from "react";
 
+// Symbol SDKのWASM初期化
+async function initializeWasm() {
+  try {
+    // クライアントサイドでのみ実行
+    if (typeof window !== "undefined") {
+      // Symbol SDKがすでに初期化されているか確認
+      if (!(window as any).symbolSdkInitialized) {
+        console.log("Initializing Symbol WASM...");
+
+        // 直接WASMファイルにアクセスする試み
+        try {
+          // @ts-ignore - モジュールの型定義がないためエラーを無視
+          await import("symbol-crypto-wasm-web");
+          console.log("Symbol WASM initialized via direct import");
+        } catch (importError) {
+          console.error("Direct import failed:", importError);
+
+          // フォールバック: グローバルオブジェクトを確認
+          if (typeof (window as any).symbolSdk !== "undefined") {
+            console.log("Symbol SDK found in global object");
+          } else {
+            console.warn("Symbol SDK not found in global object");
+          }
+        }
+
+        (window as any).symbolSdkInitialized = true;
+        console.log("Symbol WASM initialization completed");
+      }
+    }
+  } catch (error) {
+    console.error("Failed to initialize Symbol WASM:", error);
+  }
+}
+
 export default function Home() {
   const [messageText, setMessageText] = useState("Hello Symbol!");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   // 定数の定義
   const NODE = "http://sym-test-01.opening-line.jp:3000";
@@ -19,14 +54,18 @@ export default function Home() {
   const BobAddress = "TCSMJNJTRI76YPGQFDEZBFL3XTM4L3AWELOGBDY";
 
   useEffect(() => {
-    try {
-      const privateKey = new PrivateKey(AlicePrivateKey);
-      console.log(`Private Key: ${privateKey.toString()}`);
-      const keyPair = new KeyPair(privateKey);
-      console.log(`Public Key: ${keyPair.publicKey.toString()}`);
-    } catch (error) {
-      console.error("初期化エラー:", error);
-    }
+    // WASMの初期化
+    initializeWasm().then(() => {
+      setInitialized(true);
+      try {
+        const privateKey = new PrivateKey(AlicePrivateKey);
+        console.log(`Private Key: ${privateKey.toString()}`);
+        const keyPair = new KeyPair(privateKey);
+        console.log(`Public Key: ${keyPair.publicKey.toString()}`);
+      } catch (error) {
+        console.error("初期化エラー:", error);
+      }
+    });
   }, []);
 
   const handleSendTransaction = async () => {
