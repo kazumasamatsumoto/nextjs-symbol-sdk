@@ -45,7 +45,7 @@ export default function Home() {
   const [initialized, setInitialized] = useState(false);
 
   // 定数の定義
-  const NODE = "http://sym-test-01.opening-line.jp:3000";
+  const NODE = "https://sym-test-01.opening-line.jp:3001/";
   const facade = new SymbolFacade("testnet");
   const AlicePrivateKey =
     "33047CFD3ABA8E1B6FE047182F9B0118E2FA7E7D9E33865533AB582973F3B2A8";
