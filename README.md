@@ -108,4 +108,36 @@ declare module "*.wasm" {
 
 これらの対応により、Vercel 環境でも Symbol SDK の WASM ファイルが正しく処理されるようになり、デプロイ時のビルドエラーが解消されました。
 
+## Mixed コンテンツエラーの解決
+
+Vercel にデプロイした際、以下のような Mixed Content エラーが発生することがあります：
+
+```
+Mixed Content: The page at 'https://nextjs-symbol-xxx.vercel.app/' was loaded over HTTPS, but requested an insecure resource 'http://sym-test-01.opening-line.jp:3000/transactions'. This request has been blocked; the content must be served over HTTPS.
+```
+
+このエラーは、HTTPS で提供されているページ（Vercel にデプロイされたアプリ）が、HTTP のリソースにアクセスしようとした際に発生するセキュリティの問題です。
+
+### 解決策
+
+アプリケーション内のすべての API エンドポイントを HTTPS に変更する必要があります：
+
+1. `app/page.tsx`内の NODE 変数を HTTPS プロトコルに変更
+
+   ```javascript
+   // 変更前
+   const NODE = "http://sym-test-01.opening-line.jp:3000";
+
+   // 変更後
+   const NODE = "https://sym-test-01.opening-line.jp:3000";
+   ```
+
+2. 他の API 呼び出しも HTTPS URL を使用するように変更
+
+対象のサーバーが HTTPS に対応していない場合は、以下のいずれかの対応が必要です：
+
+- サーバー側で HTTPS を有効にする
+- HTTPS プロキシを使用する
+- 自分のサーバーにプロキシ API を実装して中継する
+
 # nextjs-symbol-sdk

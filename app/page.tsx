@@ -39,7 +39,7 @@ async function initializeWasm() {
 }
 
 export default function Home() {
-  const [messageText, setMessageText] = useState("Hello Symbol!");
+  const [messageText, setMessageText] = useState("Hello Symbol!!!!!!!");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
